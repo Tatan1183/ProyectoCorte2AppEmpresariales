@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Veterinaria</title>
+    <link rel="icon" type="images/png" href="/img.logos/logo1.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,800;1,400&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+    <div class="d-flex " style="width: 20%;">
+        <div id="div2">
+            <!-- menu -->
+            <div class="mb-5 text-center">
+                <h3 class="texcolor3">Clínica Veterinaria</h3>
+            </div>
+            <ul class="navbar-nav mb-2 mb-lg-0 d-flex justify-content-start">
+                <li class="nav-item d-flex gap-3" style="display:flex; align-items: center;">
+                    <i class="bi bi-calendar-check text-white"></i>
+                    <a class="nav-link active texcolor3" aria-current="page" href="#" onclick="loadModule('citas')" style="cursor:pointer;">Citas</a>
+                </li>
+                <li class="nav-item d-flex gap-3" style="display:flex; align-items: center;">
+                    <i class="bi bi-people text-white"></i>
+                    <a class="nav-link texcolor3" href="#" onclick="loadModule('clientes')" style="cursor:pointer;">Clientes</a>
+                </li>
+                <li class="nav-item d-flex gap-3" style="display:flex; align-items: center;">
+                    <i class="bi bi-github text-white"></i>
+                    <a class="nav-link texcolor3" href="#" onclick="loadModule('mascotas')" style="cursor:pointer;">Mascotas</a>
+                </li>
+                <li class="nav-item d-flex gap-3" style="display:flex; align-items: center;">
+                    <i class="bi bi-clipboard2-pulse text-white"></i>
+                    <a class="nav-link texcolor3" href="#" onclick="loadModule('servicios')" style="cursor:pointer;">Servicios</a>
+                </li>
+                <li class="nav-item d-flex gap-3" style="display:flex; align-items: center;">
+                    <i class="bi bi-person-badge text-white"></i>
+                    <a class="nav-link texcolor3" href="#" onclick="loadModule('veterinarios')" style="cursor:pointer;">Veterinarios</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modales para cada entidad -->
+    <!-- Modal Citas -->
+    <div class="modal fade" id="modalCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header color1">
+                    <h1 class="modal-title fs-5 headerr" id="citaModalTitle">Registrar Nueva Cita</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="formCita" class="row g-3">
+                        <input type="hidden" id="citaId">
+                        <div class="col-md-12">
+                            <label for="mascotaSelect" class="form-label headerr">Mascota</label>
+                            <select class="form-select" id="mascotaSelect" required>
+                                <option value="">Seleccionar Mascota</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="veterinarioSelect" class="form-label headerr">Veterinario</label>
+                            <select class="form-select" id="veterinarioSelect" required>
+                                <option value="">Seleccionar Veterinario</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="servicioSelect" class="form-label headerr">Servicio</label>
+                            <select class="form-select" id="servicioSelect" required>
+                                <option value="">Seleccionar Servicio</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="fechaHora" class="form-label headerr">Fecha y Hora</label>
+                            <input type="datetime-local" class="form-control" id="fechaHora" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="estado" class="form-label headerr">Estado</label>
+                            <select class="form-select" id="estado" required>
+                                <option value="">Seleccionar Estado</option>
+                                <option value="Programada">Programada</option>
+                                <option value="Confirmada">Confirmada</option>
+                                <option value="Completada">Completada</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="notas" class="form-label headerr">Notas</label>
+                            <textarea class="form-control" id="notas" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary color3 border3 headerr" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn color5 color-heder headerr" onclick="saveCita()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Clientes -->
+    <div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header color1">
+                    <h1 class="modal-title fs-5 headerr" id="clienteModalTitle">Registrar Nuevo Cliente</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="formCliente" class="row g-3">
+                        <input type="hidden" id="clienteId">
+                        <div class="col-md-12">
+                            <label for="nombreCliente" class="form-label headerr">Nombre</label>
+                            <input type="text" class="form-control" id="nombreCliente" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="apellidoCliente" class="form-label headerr">Apellido</label>
+                            <input type="text" class="form-control" id="apellidoCliente" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="telefonoCliente" class="form-label headerr">Teléfono</label>
+                            <input type="text" class="form-control" id="telefonoCliente" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="emailCliente" class="form-label headerr">Email</label>
+                            <input type="email" class="form-control" id="emailCliente" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="direccionCliente" class="form-label headerr">Dirección</label>
+                            <input type="text" class="form-control" id="direccionCliente" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary color3 border3 headerr" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn color5 color-heder headerr" onclick="saveCliente()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Mascotas -->
+    <div class="modal fade" id="modalMascota" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header color1">
+                    <h1 class="modal-title fs-5 headerr" id="mascotaModalTitle">Registrar Nueva Mascota</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="formMascota" class="row g-3">
+                        <input type="hidden" id="mascotaId">
+                        <div class="col-md-12">
+                            <label for="nombreMascota" class="form-label headerr">Nombre</label>
+                            <input type="text" class="form-control" id="nombreMascota" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="especieMascota" class="form-label headerr">Especie</label>
+                            <select class="form-select" id="especieMascota" required>
+                                <option value="">Seleccionar Especie</option>
+                                <option value="Perro">Perro</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Ave">Ave</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="razaMascota" class="form-label headerr">Raza</label>
+                            <input type="text" class="form-control" id="razaMascota" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="fechaNacimientoMascota" class="form-label headerr">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="fechaNacimientoMascota" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="clienteMascota" class="form-label headerr">Dueño</label>
+                            <select class="form-select" id="clienteMascota" required>
+                                <option value="">Seleccionar Dueño</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="imagenMascota" class="form-label headerr">Imagen</label>
+                            <input type="file" class="form-control" id="imagenMascota">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary color3 border3 headerr" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn color5 color-heder headerr" onclick="saveMascota()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Servicios -->
+    <div class="modal fade" id="modalServicio" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header color1">
+                    <h1 class="modal-title fs-5 headerr" id="servicioModalTitle">Registrar Nuevo Servicio</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="formServicio" class="row g-3">
+                        <input type="hidden" id="servicioId">
+                        <div class="col-md-12">
+                            <label for="nombreServicio" class="form-label headerr">Nombre</label>
+                            <input type="text" class="form-control" id="nombreServicio" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="descripcionServicio" class="form-label headerr">Descripción</label>
+                            <textarea class="form-control" id="descripcionServicio" rows="3" required></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="precioServicio" class="form-label headerr">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="precioServicio" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary color3 border3 headerr" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn color5 color-heder headerr" onclick="saveServicio()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Veterinarios -->
+    <div class="modal fade" id="modalVeterinario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header color1">
+                    <h1 class="modal-title fs-5 headerr" id="veterinarioModalTitle">Registrar Nuevo Veterinario</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="formVeterinario" class="row g-3">
+                        <input type="hidden" id="veterinarioId">
+                        <div class="col-md-12">
+                            <label for="nombreVeterinario" class="form-label headerr">Nombre</label>
+                            <input type="text" class="form-control" id="nombreVeterinario" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="apellidoVeterinario" class="form-label headerr">Apellido</label>
+                            <input type="text" class="form-control" id="apellidoVeterinario" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="especialidadVeterinario" class="form-label headerr">Especialidad</label>
+                            <input type="text" class="form-control" id="especialidadVeterinario" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="emailVeterinario" class="form-label headerr">Email</label>
+                            <input type="email" class="form-control" id="emailVeterinario" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="passwordVeterinario" class="form-label headerr">Contraseña</label>
+                            <input type="password" class="form-control" id="passwordVeterinario">
+                        </div>
+                        <div class="col-md-12">
+                            <label for="imagenVeterinario" class="form-label headerr">Imagen</label>
+                            <input type="file" class="form-control" id="imagenVeterinario">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary color3 border3 headerr" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn color5 color-heder headerr" onclick="saveVeterinario()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="div2 alertaAlerta" style="background-color: #233249;">
+        <div class="sub-menu d-flex justify-content-between menu-cuenta">
+            <div class="divcueta border-bottom">
+                <img src="/TrainerTatan.jpg" alt="" srcset="" class="cuenta2">
+                <div class="ps-2">
+                    <h5 class="texcolor3">Dr. Veterinario</h5>
+                </div>
+            </div>
+            <div class="align-items-center d-flex gap-3 margin-rigth">
+                <a href=""><i class="bi bi-envelope text-white" style="font-size: 1.5rem; cursor:pointer"></i></a>
+                <a href=""><i class="bi bi-bell text-white" style="font-size: 1.5rem; cursor:pointer"></i></a>
+                <a href=""><i class="bi bi-person-square text-white" style="font-size: 1.5rem; cursor:pointer"></i></a>
+            </div>
+        </div>
+
+        <!-- Botón para agregar nuevo elemento -->
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h3 id="currentModuleTitle" class="texcolor3">Citas</h3>
+            <button id="btnAdd" class="btn color5 color-heder headerr" onclick="showAddModal()">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </button>
+        </div>
+
+        <!-- Tabla dinámica -->
+        <div id="div3" class="conta">
+            <table class="table" id="dataTable">
+                <thead class="menu-busqueda">
+                    <tr id="tableHeaders">
+                        <!-- Los encabezados se generarán dinámicamente -->
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider" id="tableBody">
+                    <!-- Los datos se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        <footer class="w- d-flex align-items justify-content-center">
+            <p class="fs-5 px-2 pt-2">Clínica Veterinaria - Desarrollado por Estudiantes UTS</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+            crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
