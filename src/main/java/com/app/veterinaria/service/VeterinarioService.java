@@ -3,6 +3,7 @@ package com.app.veterinaria.service;
 import com.app.veterinaria.model.Veterinario;
 import com.app.veterinaria.repository.VeterinarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder; // ✅ importar esto
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,9 @@ public class VeterinarioService {
     @Autowired
     private VeterinarioRepository veterinarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; // ✅ inyectar el encoder
+
     public List<Veterinario> findAll() {
         return veterinarioRepository.findAll();
     }
@@ -28,6 +32,10 @@ public class VeterinarioService {
     }
 
     public Veterinario save(Veterinario veterinario) {
+        // Encriptar contraseña si es nueva o fue modificada
+        if (veterinario.getPassword() != null && !veterinario.getPassword().startsWith("$2a$")) {
+            veterinario.setPassword(passwordEncoder.encode(veterinario.getPassword()));
+        }
         return veterinarioRepository.save(veterinario);
     }
 
