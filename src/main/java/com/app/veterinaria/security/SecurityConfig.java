@@ -34,11 +34,8 @@ public class SecurityConfig {
                         "/app.js",
                         "/auth.js",
                         "/logo3.jpg",
-                        "/images/**",
-                        "/**/*.js",
-                        "/**/*.css",
-                        "/**/*.jpg",
-                        "/**/*.png"
+                        "/images/**"
+                        
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()

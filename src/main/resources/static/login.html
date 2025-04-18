@@ -36,6 +36,7 @@
             </div>
         </div>
 
+        <!-- En login.html, dentro del script, en el bloque 'if (response.ok)' -->
         <script>
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -57,14 +58,18 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        sessionStorage.setItem('token', data.token);
-                        sessionStorage.setItem('user', JSON.stringify(data.veterinario));
-                        window.location.href = '/index.html';
+                        
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.veterinario));
+                        
+                        window.location.href = '/index.html'; // Redirige a la página principal
                     } else {
+                        errorAlert.textContent = 'Credenciales inválidas. Inténtalo de nuevo.'; // Mensaje más claro
                         errorAlert.classList.remove('d-none');
                     }
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('Error en el login:', error);
+                    errorAlert.textContent = 'Error de conexión al intentar iniciar sesión.'; // Mensaje más específico
                     errorAlert.classList.remove('d-none');
                 }
             });
