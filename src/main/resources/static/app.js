@@ -3,10 +3,30 @@ let currentModule = "citas"
 const API_URL = "/api"
 let currentEditId = null
 
-// Cargar módulo al iniciar
+
 document.addEventListener("DOMContentLoaded", () => {
-  loadModule("citas")
-})
+    // --- CÓDIGO PARA BIENVENIDA ---
+    try {
+        const userString = localStorage.getItem('user');
+        if (userString) {
+            const user = JSON.parse(userString);
+            const welcomeElement = document.getElementById('welcomeMessage');
+            if (welcomeElement && user && user.nombre && user.apellido) {
+                // Asumiendo 'Dr.' - podrías hacerlo más genérico
+                welcomeElement.textContent = `Bienvenido/a Dr. ${user.nombre} ${user.apellido}`;
+            }
+        }
+    } catch (e) {
+        console.error("Error al parsear datos de usuario para bienvenida:", e);
+        // No mostrar mensaje si hay error
+    }
+    // Cargar módulo inicial (tu código existente)
+    loadModule("citas");
+    checkAuth(); // Llama a checkAuth aquí o asegúrate que se llame antes
+});
+
+
+
 
 // Función para cargar un módulo específico
 function loadModule(module) {
