@@ -492,88 +492,120 @@ async function saveCliente() {
 
 // Función para guardar una mascota
 async function saveMascota() {
-  const nombre = document.getElementById("nombreMascota").value
-  const especie = document.getElementById("especieMascota").value
-  const raza = document.getElementById("razaMascota").value
-  const fechaNacimiento = document.getElementById("fechaNacimientoMascota").value
-  const clienteId = document.getElementById("clienteMascota").value
-  const imagenInput = document.getElementById("imagenMascota")
+    const nombre = document.getElementById("nombreMascota").value;
+    const especie = document.getElementById("especieMascota").value;
+    const raza = document.getElementById("razaMascota").value;
+    const fechaNacimiento = document.getElementById("fechaNacimientoMascota").value;
+    const clienteId = document.getElementById("clienteMascota").value;
+    const imagenInput = document.getElementById("imagenMascota");
+    let imagenNombre = null; // Variable para el nombre de la imagen
 
-  if (!nombre || !especie || !raza || !fechaNacimiento || !clienteId) {
-    alert("Por favor complete todos los campos obligatorios")
-    return
-  }
+    if (!nombre || !especie || !raza || !fechaNacimiento || !clienteId) {
+        alert("Por favor complete todos los campos obligatorios");
+        return;
+    }
 
-  let imagenNombre = null
+    // --- Lógica de Edición vs Creación para la Imagen ---
+    if (currentEditId) {
+        // --- ESTAMOS EDITANDO ---
+        if (imagenInput.files.length > 0) {
+            // 1. Si SÍ se seleccionó un NUEVO archivo durante la edición, subirlo
+            console.log("Editando: Se seleccionó nueva imagen, subiendo...");
+            try {
+                const formData = new FormData();
+                formData.append("file", imagenInput.files[0]);
+                const uploadResponse = await fetch(`${API_URL}/mascotas/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
 
-  // Si hay una imagen seleccionada, subirla primero
-  if (imagenInput.files.length > 0) {
+                if (!uploadResponse.ok) {
+                    throw new Error(`Error al subir nueva imagen: ${uploadResponse.statusText}`);
+                }
+                imagenNombre = await uploadResponse.text(); // Obtener el nombre del NUEVO archivo
+                console.log("Editando: Nueva imagen subida:", imagenNombre);
+            } catch (error) {
+                console.error("Error al subir nueva imagen durante edición:", error);
+                alert(`Error al subir nueva imagen: ${error.message}`);
+                return; // Detener si falla la subida de la nueva imagen
+            }
+        } else {
+            // 2. Si NO se seleccionó archivo nuevo, NO hacemos nada con imagenNombre.
+            //    imagenNombre permanecerá null. NO queremos sobreescribir la imagen existente.
+            console.log("Editando: No se seleccionó nueva imagen, se conservará la existente.");
+        }
+    } else {
+        // --- ESTAMOS CREANDO (Registro Nuevo) ---
+        if (imagenInput.files.length > 0) {
+            // Subir imagen si se seleccionó una al crear
+            console.log("Creando: Se seleccionó imagen, subiendo...");
+            try {
+                const formData = new FormData();
+                formData.append("file", imagenInput.files[0]);
+                const uploadResponse = await fetch(`${API_URL}/mascotas/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
+                if (!uploadResponse.ok) {
+                    throw new Error(`Error al subir imagen: ${uploadResponse.statusText}`);
+                }
+                imagenNombre = await uploadResponse.text();
+                console.log("Creando: Imagen subida:", imagenNombre);
+            } catch (error) {
+                console.error("Error al subir imagen en creación:", error);
+                alert(`Error al subir imagen: ${error.message}`);
+                return;
+            }
+        } else {
+            console.log("Creando: No se seleccionó imagen.");
+        }
+    }
+
+    const mascota = {
+        nombre: nombre,
+        especie: especie,
+        raza: raza,
+        fechaNacimiento: fechaNacimiento,
+        clienteId: Number.parseInt(clienteId),
+    };
+
+    if (imagenNombre) {
+        mascota.imagen = imagenNombre;
+    }
+
+    if (currentEditId) {
+        mascota.id = currentEditId;
+    }
+
     try {
-      const formData = new FormData()
-      formData.append("file", imagenInput.files[0])
+        const method = currentEditId ? "PUT" : "POST";
+        const url = currentEditId ? `${API_URL}/mascotas/${currentEditId}` : `${API_URL}/mascotas`;
 
-      const uploadResponse = await fetch(`${API_URL}/mascotas/upload`, {
-        method: "POST",
-        body: formData,
-      })
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(mascota),
+        });
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Error al subir imagen: ${uploadResponse.statusText}`)
-      }
+        if (!response.ok) {
+            throw new Error(`Error al guardar mascota: ${response.statusText}`);
+        }
 
-      imagenNombre = await uploadResponse.text()
+        // Cerrar modal
+        const modalElement = document.getElementById("modalMascota");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+
+        // Recargar datos
+        fetchData("mascotas");
+
+        alert(currentEditId ? "Mascota actualizada correctamente" : "Mascota registrada correctamente");
     } catch (error) {
-      console.error("Error al subir imagen:", error)
-      alert(`Error al subir imagen: ${error.message}`)
-      return
+        console.error("Error:", error);
+        alert(`Error al guardar mascota: ${error.message}`);
     }
-  }
-
-  const mascota = {
-    nombre: nombre,
-    especie: especie,
-    raza: raza,
-    fechaNacimiento: fechaNacimiento,
-    clienteId: Number.parseInt(clienteId),
-  }
-
-  if (imagenNombre) {
-    mascota.imagen = imagenNombre
-  }
-
-  if (currentEditId) {
-    mascota.id = currentEditId
-  }
-
-  try {
-    const method = currentEditId ? "PUT" : "POST"
-    const url = currentEditId ? `${API_URL}/mascotas/${currentEditId}` : `${API_URL}/mascotas`
-
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(mascota),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error al guardar mascota: ${response.statusText}`)
-    }
-
-    // Cerrar modal
-    const modalElement = document.getElementById("modalMascota")
-    const modal = bootstrap.Modal.getInstance(modalElement)
-    modal.hide()
-
-    // Recargar datos
-    fetchData("mascotas")
-
-    alert(currentEditId ? "Mascota actualizada correctamente" : "Mascota registrada correctamente")
-  } catch (error) {
-    console.error("Error:", error)
-    alert(`Error al guardar mascota: ${error.message}`)
-  }
 }
 
 // Función para guardar un servicio
@@ -630,97 +662,129 @@ async function saveServicio() {
 
 // Función para guardar un veterinario
 async function saveVeterinario() {
-  const nombre = document.getElementById("nombreVeterinario").value
-  const apellido = document.getElementById("apellidoVeterinario").value
-  const especialidad = document.getElementById("especialidadVeterinario").value
-  const email = document.getElementById("emailVeterinario").value
-  const password = document.getElementById("passwordVeterinario").value
-  const imagenInput = document.getElementById("imagenVeterinario")
+    const nombre = document.getElementById("nombreVeterinario").value;
+    const apellido = document.getElementById("apellidoVeterinario").value;
+    const especialidad = document.getElementById("especialidadVeterinario").value;
+    const email = document.getElementById("emailVeterinario").value;
+    const password = document.getElementById("passwordVeterinario").value;
+    const imagenInput = document.getElementById("imagenVeterinario");
+    let imagenNombre = null;
 
-  if (!nombre || !apellido || !especialidad || !email) {
-    alert("Por favor complete todos los campos obligatorios")
-    return
-  }
+    if (!nombre || !apellido || !especialidad || !email) {
+        alert("Por favor complete todos los campos obligatorios");
+        return;
+    }
 
-  // Si es nuevo registro, la contraseña es obligatoria
-  if (!currentEditId && !password) {
-    alert("Por favor ingrese una contraseña")
-    return
-  }
+    // Si es nuevo registro, la contraseña es obligatoria
+    if (!currentEditId && !password) {
+        alert("Por favor ingrese una contraseña");
+        return;
+    }
 
-  let imagenNombre = null
+    // --- Lógica de Edición vs Creación para la Imagen ---
+    if (currentEditId) {
+        // --- ESTAMOS EDITANDO ---
+        if (imagenInput.files.length > 0) {
+            // 1. Si SÍ se seleccionó un NUEVO archivo durante la edición, subirlo
+            console.log("Editando Vet: Se seleccionó nueva imagen, subiendo...");
+            try {
+                const formData = new FormData();
+                formData.append("file", imagenInput.files[0]);
+                const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
 
-  // Si hay una imagen seleccionada, subirla primero
-  if (imagenInput.files.length > 0) {
+                if (!uploadResponse.ok) {
+                    throw new Error(`Error al subir nueva imagen: ${uploadResponse.statusText}`);
+                }
+                imagenNombre = await uploadResponse.text(); // Obtener el nombre del NUEVO archivo
+                console.log("Editando Vet: Nueva imagen subida:", imagenNombre);
+            } catch (error) {
+                console.error("Error al subir nueva imagen durante edición:", error);
+                alert(`Error al subir nueva imagen: ${error.message}`);
+                return; // Detener si falla la subida de la nueva imagen
+            }
+        } else {
+            // 2. Si NO se seleccionó archivo nuevo, NO hacemos nada con imagenNombre.
+            //    imagenNombre permanecerá null. NO queremos sobreescribir la imagen existente.
+            console.log("Editando Vet: No se seleccionó nueva imagen, se conservará la existente.");
+        }
+    } else {
+        // --- ESTAMOS CREANDO (Registro Nuevo) ---
+        if (imagenInput.files.length > 0) {
+            // Subir imagen si se seleccionó una al crear
+            console.log("Creando Vet: Se seleccionó imagen, subiendo...");
+            try {
+                const formData = new FormData();
+                formData.append("file", imagenInput.files[0]);
+                const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {
+                    method: "POST",
+                    body: formData,
+                });
+                if (!uploadResponse.ok) {
+                    throw new Error(`Error al subir imagen: ${uploadResponse.statusText}`);
+                }
+                imagenNombre = await uploadResponse.text();
+                console.log("Creando Vet: Imagen subida:", imagenNombre);
+            } catch (error) {
+                console.error("Error al subir imagen en creación:", error);
+                alert(`Error al subir imagen: ${error.message}`);
+                return;
+            }
+        } else {
+            console.log("Creando Vet: No se seleccionó imagen.");
+        }
+    }
+
+    const veterinario = {
+        nombre: nombre,
+        apellido: apellido,
+        especialidad: especialidad,
+        email: email,
+    };
+
+    if (password) {
+        veterinario.password = password;
+    }
+
+    if (imagenNombre) {
+        veterinario.imagen = imagenNombre;
+    }
+
+    if (currentEditId) {
+        veterinario.id = currentEditId;
+    }
+
     try {
-      const formData = new FormData()
-      formData.append("file", imagenInput.files[0])
+        const method = currentEditId ? "PUT" : "POST";
+        const url = currentEditId ? `${API_URL}/veterinarios/${currentEditId}` : `${API_URL}/veterinarios`;
 
-      const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {
-        method: "POST",
-        body: formData,
-      })
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(veterinario),
+        });
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Error al subir imagen: ${uploadResponse.statusText}`)
-      }
+        if (!response.ok) {
+            throw new Error(`Error al guardar veterinario: ${response.statusText}`);
+        }
 
-      imagenNombre = await uploadResponse.text()
+        // Cerrar modal
+        const modalElement = document.getElementById("modalVeterinario");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+
+        // Recargar datos
+        fetchData("veterinarios");
+
+        alert(currentEditId ? "Veterinario actualizado correctamente" : "Veterinario registrado correctamente");
     } catch (error) {
-      console.error("Error al subir imagen:", error)
-      alert(`Error al subir imagen: ${error.message}`)
-      return
+        console.error("Error:", error);
+        alert(`Error al guardar veterinario: ${error.message}`);
     }
-  }
-
-  const veterinario = {
-    nombre: nombre,
-    apellido: apellido,
-    especialidad: especialidad,
-    email: email,
-  }
-
-  if (password) {
-    veterinario.password = password
-  }
-
-  if (imagenNombre) {
-    veterinario.imagen = imagenNombre
-  }
-
-  if (currentEditId) {
-    veterinario.id = currentEditId
-  }
-
-  try {
-    const method = currentEditId ? "PUT" : "POST"
-    const url = currentEditId ? `${API_URL}/veterinarios/${currentEditId}` : `${API_URL}/veterinarios`
-
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(veterinario),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error al guardar veterinario: ${response.statusText}`)
-    }
-
-    // Cerrar modal
-    const modalElement = document.getElementById("modalVeterinario")
-    const modal = bootstrap.Modal.getInstance(modalElement)
-    modal.hide()
-
-    // Recargar datos
-    fetchData("veterinarios")
-
-    alert(currentEditId ? "Veterinario actualizado correctamente" : "Veterinario registrado correctamente")
-  } catch (error) {
-    console.error("Error:", error)
-    alert(`Error al guardar veterinario: ${error.message}`)
-  }
 }
 
 // Función para eliminar un elemento
