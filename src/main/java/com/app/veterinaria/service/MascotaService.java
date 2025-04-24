@@ -23,28 +23,71 @@ public class MascotaService {
     @Autowired
     private MascotaRepository mascotaRepository;
 
+    
+    
     @Autowired
     private ClienteRepository clienteRepository;
 
+    
+    
     public List<MascotaDTO> findAll() {
         List<Mascota> mascotas = mascotaRepository.findAll();
         return mascotas.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    
+    
     public Optional<MascotaDTO> findById(Long id) {
         return mascotaRepository.findById(id).map(this::convertToDTO);
     }
 
+    
+    
     public MascotaDTO save(MascotaDTO mascotaDTO) {
-        Mascota mascota = convertToEntity(mascotaDTO);
+        Mascota mascota;
+
+        // --- Verificamos si es edición ---
+        if (mascotaDTO.getId() != null) {
+            Mascota existingMascota = mascotaRepository.findById(mascotaDTO.getId())
+                    .orElseThrow(() -> new RuntimeException("Mascota no encontrada para actualizar con id: " + mascotaDTO.getId()));
+
+            mascota = existingMascota;
+            mascota.setNombre(mascotaDTO.getNombre());
+            mascota.setEspecie(mascotaDTO.getEspecie());
+            mascota.setRaza(mascotaDTO.getRaza());
+            mascota.setFechaNacimiento(mascotaDTO.getFechaNacimiento());
+
+            // Manejar Imagen: conservar la existente si no se proporciona nueva
+            if (mascotaDTO.getImagen() == null || mascotaDTO.getImagen().trim().isEmpty()) {
+                mascota.setImagen(existingMascota.getImagen());
+            } else {
+                mascota.setImagen(mascotaDTO.getImagen());
+            }
+
+            // Asociar cliente si viene uno nuevo
+            if (mascotaDTO.getClienteId() != null) {
+                Cliente cliente = clienteRepository.findById(mascotaDTO.getClienteId())
+                        .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                mascota.setCliente(cliente);
+            }
+
+        } else {
+            // --- NUEVO registro ---
+            mascota = convertToEntity(mascotaDTO);
+        }
+
         Mascota savedMascota = mascotaRepository.save(mascota);
         return convertToDTO(savedMascota);
     }
 
+    
+    
     public void deleteById(Long id) {
         mascotaRepository.deleteById(id);
     }
 
+    
+    
     public String uploadImage(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
         Path path = Paths.get("src/main/resources/static/images/" + fileName);
@@ -52,6 +95,8 @@ public class MascotaService {
         return fileName;
     }
 
+    
+    
     public MascotaDTO convertToDTO(Mascota mascota) {
         MascotaDTO dto = new MascotaDTO();
         dto.setId(mascota.getId());
@@ -70,6 +115,7 @@ public class MascotaService {
         return dto;
     }
 
+    
     public Mascota convertToEntity(MascotaDTO dto) {
         Mascota mascota = new Mascota();
         mascota.setId(dto.getId());
