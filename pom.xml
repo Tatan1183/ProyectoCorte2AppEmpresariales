@@ -53,6 +53,7 @@
             <scope>runtime</scope>
         </dependency>
 
+         <!-- Lombok para reducir el código boilerplate (constructores, getters, etc.) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -66,6 +67,7 @@
             <scope>test</scope>
         </dependency>
 
+         <!-- JJWT: Librería para manejo de tokens JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
@@ -76,7 +78,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
+          
+        <!-- API de JAXB para compatibilidad con XML --> 
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -91,6 +94,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <!-- Excluir Lombok del artefacto final -->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
