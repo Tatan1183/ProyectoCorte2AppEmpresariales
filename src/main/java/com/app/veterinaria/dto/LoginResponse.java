@@ -4,10 +4,10 @@ import com.app.veterinaria.model.Veterinario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
-@AllArgsConstructor
+@Data // Lombok genera automáticamente los métodos getters, setters, equals, hashCode y toString
+@AllArgsConstructor // Lombok genera un constructor con todos los campos
 public class LoginResponse {
 
-    private String token;
-    private Veterinario veterinario;
+    private String token; // El token JWT generado para el veterinario autenticado
+    private Veterinario veterinario; // El objeto veterinario que contiene la información del veterinario autenticado
 }

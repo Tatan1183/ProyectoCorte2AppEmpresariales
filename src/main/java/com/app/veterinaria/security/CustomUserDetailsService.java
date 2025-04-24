@@ -11,18 +11,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-@Service
+@Service // Marca la clase como un servicio gestionado por Spring
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
+    @Autowired // Inyección automática del repositorio de Veterinarios
     private VeterinarioRepository veterinarioRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Buscar veterinario por email
         Veterinario veterinario = veterinarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
+        // Crear un objeto User de Spring Security con el email, contraseña y roles (vacío en este caso)
         return new User(veterinario.getEmail(), veterinario.getPassword(), new ArrayList<>());
     }
 }
-

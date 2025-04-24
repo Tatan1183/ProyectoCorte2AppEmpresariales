@@ -1,9 +1,10 @@
 package com.app.veterinaria.dto;
 
-import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.Data; 
+import java.time.LocalDateTime; // Importa la clase LocalDateTime para manejar la fecha y hora
 
-@Data
+@Data // Lombok genera automáticamente los métodos getters, setters, equals, hashCode y toString
+
 public class CitaDTO {
 
     private Long id;
