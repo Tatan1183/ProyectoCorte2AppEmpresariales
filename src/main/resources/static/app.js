@@ -301,11 +301,15 @@ function fillForm(item) {
             document.getElementById("apellidoVeterinario").value = item.apellido
             document.getElementById("especialidadVeterinario").value = item.especialidad
             document.getElementById("emailVeterinario").value = item.email
-            // No establecemos la contraseña por seguridad
+            // *** CAMBIO: Limpiar campos de contraseña al editar ***
+            document.getElementById("newPasswordVeterinario").value = "";
+            document.getElementById("confirmPasswordVeterinario").value = "";
             // No se puede establecer el valor del input file
-            break
+            document.getElementById("imagenVeterinario").value = ""; // Limpiar el input de imagen
+            break;
     }
 }
+
 
 // Función para limpiar el formulario
 function clearForm() {
@@ -348,9 +352,11 @@ function clearForm() {
             document.getElementById("apellidoVeterinario").value = ""
             document.getElementById("especialidadVeterinario").value = ""
             document.getElementById("emailVeterinario").value = ""
-            document.getElementById("passwordVeterinario").value = ""
+            // *** CAMBIO: Limpiar los nuevos campos de contraseña ***
+            document.getElementById("newPasswordVeterinario").value = "";
+            document.getElementById("confirmPasswordVeterinario").value = "";
             document.getElementById("imagenVeterinario").value = ""
-            break
+            break;
     }
 }
 
@@ -665,123 +671,156 @@ async function saveVeterinario() {
     const apellido = document.getElementById("apellidoVeterinario").value;
     const especialidad = document.getElementById("especialidadVeterinario").value;
     const email = document.getElementById("emailVeterinario").value;
-    const password = document.getElementById("passwordVeterinario").value;
+    // Leer los campos de contraseña nueva y confirmación
+    const newPassword = document.getElementById("newPasswordVeterinario").value;
+    const confirmPassword = document.getElementById("confirmPasswordVeterinario").value;
     const imagenInput = document.getElementById("imagenVeterinario");
     let imagenNombre = null;
+    let passwordToSend = null; // Variable para la contraseña a enviar al backend
 
+    // Validaciones básicas
     if (!nombre || !apellido || !especialidad || !email) {
-        alert("Por favor complete todos los campos obligatorios");
+        alert("Por favor complete los campos Nombre, Apellido, Especialidad y Email");
         return;
     }
 
-    // Si es nuevo registro, la contraseña es obligatoria
-    if (!currentEditId && !password) {
-        alert("Por favor ingrese una contraseña");
-        return;
-    }
-
-    // --- Lógica de Edición vs Creación para la Imagen ---
-    if (currentEditId) {
-        // --- ESTAMOS EDITANDO ---
-        if (imagenInput.files.length > 0) {
-            // 1. Si SÍ se seleccionó un NUEVO archivo durante la edición, subirlo
-            console.log("Editando Vet: Se seleccionó nueva imagen, subiendo...");
-            try {
-                const formData = new FormData();
-                formData.append("file", imagenInput.files[0]);
-                const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {
-                    method: "POST",
-                    body: formData,
-                });
-
-                if (!uploadResponse.ok) {
-                    throw new Error(`Error al subir nueva imagen: ${uploadResponse.statusText}`);
-                }
-                imagenNombre = await uploadResponse.text(); // Obtener el nombre del NUEVO archivo
-                console.log("Editando Vet: Nueva imagen subida:", imagenNombre);
-            } catch (error) {
-                console.error("Error al subir nueva imagen durante edición:", error);
-                alert(`Error al subir nueva imagen: ${error.message}`);
-                return; // Detener si falla la subida de la nueva imagen
-            }
-        } else {
-            // 2. Si NO se seleccionó archivo nuevo, NO hacemos nada con imagenNombre.
-            //    imagenNombre permanecerá null. NO queremos sobreescribir la imagen existente.
-            console.log("Editando Vet: No se seleccionó nueva imagen, se conservará la existente.");
+    // Lógica de validación de contraseña para edición o creación
+    // 1. Si estamos creando (no hay currentEditId)
+    if (!currentEditId) {
+        if (!newPassword.trim()) {
+            alert("La contraseña es obligatoria para registrar un nuevo veterinario.");
+            return;
         }
-    } else {
-        // --- ESTAMOS CREANDO (Registro Nuevo) ---
-        if (imagenInput.files.length > 0) {
-            // Subir imagen si se seleccionó una al crear
-            console.log("Creando Vet: Se seleccionó imagen, subiendo...");
-            try {
-                const formData = new FormData();
-                formData.append("file", imagenInput.files[0]);
-                const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {
-                    method: "POST",
-                    body: formData,
-                });
-                if (!uploadResponse.ok) {
-                    throw new Error(`Error al subir imagen: ${uploadResponse.statusText}`);
-                }
-                imagenNombre = await uploadResponse.text();
-                console.log("Creando Vet: Imagen subida:", imagenNombre);
-            } catch (error) {
-                console.error("Error al subir imagen en creación:", error);
-                alert(`Error al subir imagen: ${error.message}`);
-                return;
+        if (newPassword !== confirmPassword) {
+            alert("Las contraseñas no coinciden para el nuevo registro.");
+            return;
+        }
+        passwordToSend = newPassword; // Contraseña válida para creación
+    }
+    // 2. Si estamos editando (hay currentEditId)
+    else {
+        // Solo validamos/enviamos contraseña si se llenó el campo de NUEVA contraseña
+        if (newPassword.trim() !== "") {
+            if (newPassword === confirmPassword) {
+                // Contraseñas coinciden, preparamos para enviar
+                passwordToSend = newPassword;
+                console.log("Se intentará actualizar la contraseña.");
+            } else {
+                // Contraseñas no coinciden
+                alert("La nueva contraseña y su confirmación no coinciden. Por favor, verifíquelas.");
+                return; // Detener el proceso
             }
         } else {
-            console.log("Creando Vet: No se seleccionó imagen.");
+            // Si newPassword está vacío en edición, simplemente no se envía (passwordToSend sigue null)
+            console.log("No se especificó nueva contraseña, no se actualizará.");
         }
     }
 
-    const veterinario = {
+
+    // --- Lógica de Subida de Imagen ---
+    try {
+        if (imagenInput.files.length > 0) {
+            console.log("Intentando subir imagen para veterinario...");
+            const formData = new FormData();
+            formData.append("file", imagenInput.files[0]);
+            const uploadHeaders = getAuthHeaders ? {'Authorization': getAuthHeaders()['Authorization']} : {}; // Solo token
+            const uploadResponse = await fetch(`${API_URL}/veterinarios/upload`, {// Endpoint de veterinarios
+                method: "POST",
+                headers: uploadHeaders, // Enviar token
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                const errorText = await uploadResponse.text();
+                throw new Error(`Error al subir imagen de veterinario (${uploadResponse.status}): ${errorText}`);
+            }
+            imagenNombre = await uploadResponse.text();
+            console.log("Imagen de veterinario subida con éxito:", imagenNombre);
+        } else {
+            console.log("No se seleccionó nueva imagen para veterinario.");
+        }
+    } catch (error) {
+        console.error("Error durante la subida de imagen de veterinario:", error);
+        alert(`Error al subir la imagen de veterinario: ${error.message}`);
+        return; // Detener si la subida falla
+    }
+    // --- Fin Lógica de Imagen ---
+
+
+    // Construir el objeto veterinario base para enviar
+    const veterinarioData = {
         nombre: nombre,
         apellido: apellido,
         especialidad: especialidad,
         email: email,
+        // Contraseña e imagen se añaden condicionalmente
     };
 
-    if (password) {
-        veterinario.password = password;
+    // Añadir contraseña SOLO si se validó correctamente para creación o edición
+    if (passwordToSend) {
+        veterinarioData.password = passwordToSend;
     }
 
+    // Añadir imagen si se subió una nueva
     if (imagenNombre) {
-        veterinario.imagen = imagenNombre;
+        veterinarioData.imagen = imagenNombre;
     }
+    // Si no se subió imagen nueva en edición, el backend NO debería cambiarla.
 
+    // Añadir ID si estamos editando
     if (currentEditId) {
-        veterinario.id = currentEditId;
+        veterinarioData.id = currentEditId;
     }
 
+    console.log("Datos finales a enviar (Veterinario):", veterinarioData); // Para depuración
+
+    // --- Petición Fetch para guardar/actualizar veterinario ---
     try {
         const method = currentEditId ? "PUT" : "POST";
         const url = currentEditId ? `${API_URL}/veterinarios/${currentEditId}` : `${API_URL}/veterinarios`;
+        const headers = getAuthHeaders ? getAuthHeaders() : {'Content-Type': 'application/json'};
+        if (!headers['Content-Type'])
+            headers['Content-Type'] = 'application/json';
+
 
         const response = await fetch(url, {
             method: method,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(veterinario),
+            headers: headers,
+            body: JSON.stringify(veterinarioData), // Enviar el objeto construido
         });
 
         if (!response.ok) {
-            throw new Error(`Error al guardar veterinario: ${response.statusText}`);
+            let errorBody = `Error ${response.status}: ${response.statusText}`;
+            try {
+                const errorJson = await response.json();
+                errorBody = errorJson.message || JSON.stringify(errorJson);
+            } catch (e) {
+                errorBody = await response.text() || errorBody;
+            }
+            throw new Error(`Error al guardar veterinario: ${errorBody}`);
         }
 
+        // --- Éxito ---
         // Cerrar modal
         const modalElement = document.getElementById("modalVeterinario");
         const modal = bootstrap.Modal.getInstance(modalElement);
-        modal.hide();
+        if (modal) {
+            modal.hide();
+        } else {
+            try {
+                new bootstrap.Modal(modalElement).hide();
+            } catch (e) {
+                console.error("Error ocultando modal", e);
+            }
+        }
 
         // Recargar datos
         fetchData("veterinarios");
 
-        alert(currentEditId ? "Veterinario actualizado correctamente" : "Veterinario registrado correctamente");
+        alert(currentEditId ? "Veterinario actualizado correctamente." : "Veterinario registrado correctamente.");
+
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error en saveVeterinario (fetch/respuesta):", error);
         alert(`Error al guardar veterinario: ${error.message}`);
     }
 }
@@ -810,6 +849,7 @@ async function deleteItem(id) {
         alert(`Error al eliminar: ${error.message}`)
     }
 }
+
 
 // Función para cargar datos relacionados para los selects
 async function loadRelatedData() {

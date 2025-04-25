@@ -228,6 +228,7 @@
         </div>
 
         <!-- Modal Veterinarios -->
+
         <div class="modal fade" id="modalVeterinario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
@@ -253,10 +254,17 @@
                                 <label for="emailVeterinario" class="form-label headerr">Email</label>
                                 <input type="email" class="form-control" id="emailVeterinario" required>
                             </div>
+                            <!-- **** INICIO CAMBIO CONTRASEÑA **** -->
                             <div class="col-md-12">
-                                <label for="passwordVeterinario" class="form-label headerr">Contraseña</label>
-                                <input type="password" class="form-control" id="passwordVeterinario">
+                                <label for="newPasswordVeterinario" class="form-label headerr">Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="newPasswordVeterinario" placeholder="Dejar en blanco para no cambiar">
+                                <small class="form-text text-muted">Solo llenar si desea cambiar la contraseña.</small>
                             </div>
+                            <div class="col-md-12">
+                                <label for="confirmPasswordVeterinario" class="form-label headerr">Confirmar Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="confirmPasswordVeterinario" placeholder="Confirmar nueva contraseña">
+                            </div>
+                            <!-- **** FIN CAMBIO CONTRASEÑA **** -->
                             <div class="col-md-12">
                                 <label for="imagenVeterinario" class="form-label headerr">Imagen</label>
                                 <input type="file" class="form-control" id="imagenVeterinario">
@@ -277,7 +285,7 @@
                 <div class="divcueta border-bottom">
                     <img src="images/logo2.jpg" alt="" srcset="" class="cuenta2">
                     <div class="ps-2">
-                        <h5 class="texcolor3">App Veterinaria</h5>
+                        <h5 class="texcolor3">VetSys Pro</h5>
                         <span id="welcomeMessage" class="texcolor3" style="font-size: 0.9em;"></span>
                     </div>
                 </div>
