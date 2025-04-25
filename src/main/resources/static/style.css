@@ -1,183 +1,390 @@
+/* ----- Estilos Base ----- */
 body {
-    font-family: "Montserrat";
+    font-family: "Montserrat", sans-serif;
     font-weight: 600;
     display: flex;
-    background-color: rgb(0, 0, 0);
+    background-color: #121a27; /* Fondo oscuro base */
     height: 100vh;
+    margin: 0;
+    color: #fff;
+    overflow: hidden; /* Evita scrollbar en body */
 }
 
 a {
     text-decoration: none;
     color: inherit;
     background-color: transparent;
-    cursor: auto;
-    padding: center;
+    cursor: pointer;
 }
 
-.navv {
-    margin: auto;
-    padding: auto;
+/* ----- Contenedores Principales del Layout ----- */
+.sidebar-wrapper {
+    width: 20%;
+    flex-shrink: 0;
+    border-right: 1px solid #000; /* Línea divisoria negra */
+    height: 100vh;
     display: flex;
 }
 
-.log {
-    margin: 0.1rem;
-    height: 4rem;
-    width: 4rem;
+.main-content-wrapper {
+    width: 80%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Scroll solo para el contenido principal */
 }
 
+/* ----- Clases de Colores (Originales) ----- */
 .color1 {
     background-color: #00dbb9;
-}
+} /* Editar */
 .color2 {
     background-color: #ff0b8f;
 }
 .color3 {
     background-color: #ff6334;
-}
+} /* Borrar / Salir */
 .color4 {
     background-color: #101928;
 }
 .color5 {
     background-color: #ffa700;
-}
+} /* Agregar */
 .color6 {
     background-color: #a9cad5;
 }
 .color7 {
     background-color: #004b63;
-}
+} /* Usado en menu-busqueda */
 
-.border1 {
-    border-color: #00dbb9;
-}
-.border2 {
-    border-color: #ff0b8f;
-}
-.border3 {
-    border-color: #ff6334;
-}
-.border4 {
-    border-color: #101928;
-}
-.border5 {
-    border-color: #ffa700;
-}
-.border6 {
-    border-color: #a9cad5;
-}
-.border7 {
-    border-color: #004b63;
-}
-
-.texcolor1 {
-    font-weight: 600;
-    color: rgb(255, 255, 255);
-}
+/* ----- Clases de Texto ----- */
 .texcolor3 {
     color: rgb(252, 252, 252) !important;
 }
-.texcosize {
-    font-weight: lighter;
-    font-style: oblique;
-    color: rgb(255, 255, 255);
-    margin: 0;
-    padding: 0;
-}
-
-.divcueta {
-    display: flex;
-}
-
-.menu-cuenta {
-    padding: 2rem;
-}
-.cuenta {
-    width: 4rem;
-    height: 4rem;
-    margin-bottom: 0.3rem;
-    object-fit: cover;
-    border-radius: 50px;
-}
-
-.cuenta2 {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 0.3rem;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-#div3 {
-    overflow: auto;
-    width: 100%;
-    padding: 1rem;
-    background-color: #121a27;
-    height: calc(100vh - 180px);
-}
-
-#div2 {
-    width: 100%;
-    height: 100vh;
-    padding: 1rem;
-    background-color: #121a27;
-    margin-right: 1px;
-}
-
-th {
-    color: #ffa700 !important;
-}
-
-td {
-    color: azure !important;
-}
-
-.conta::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background-color: #121a27;
-}
-
-.conta::-webkit-scrollbar-thumb {
-    background: #ffffff;
-    border-radius: 4px;
-}
-
-.conta::-webkit-scrollbar-thumb:hover {
-    background: #b1b1b1;
-}
-
-.div2 {
-    width: 100%;
-    height: 100vh;
-}
-
-.imagenLogo {
-    width: 9rem;
-    height: 3rem;
-    object-fit: cover;
-}
-
-.menu-busqueda {
-    background-color: #004b63;
-    border-radius: 10px !important;
-    margin-bottom: 5px;
-}
-
-.alert-danger {
-    background-color: red !important;
-    color: white;
-}
-
-.btn {
-    color: #ffffff !important;
-}
-
 .headerr {
     font-weight: 600;
 }
 
-.img-thumbnail {
-    max-width: 100px;
-    max-height: 100px;
+/* ----- Layout y Componentes Específicos ----- */
+
+/* --- Sidebar (#div2 dentro de .sidebar-wrapper) --- */
+#div2 {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    background-color: #121a27; /* Fondo Oscuro Sidebar */
+    display: flex;
+    flex-direction: column;
 }
+#div2 .text-center h3 {
+    margin-bottom: 2rem;
+    color: #fff;
+}
+#div2 .navbar-nav .nav-item {
+    margin-bottom: 0.5rem;
+}
+#div2 .navbar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    color: #ccc;
+}
+#div2 .navbar-nav .nav-link i {
+    margin-right: 0.75rem;
+    color: #ccc;
+    width: 1.2em;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+#div2 .navbar-nav .nav-link:hover,
+#div2 .navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+#div2 .navbar-nav .nav-link:hover i,
+#div2 .navbar-nav .nav-link.active i {
+    color: #fff;
+}
+
+/* --- Área Principal (Dentro de .main-content-wrapper) --- */
+
+/* --- Top Bar --- */
+.sub-menu {
+    padding: 1rem 2rem;
+    background-color: #1E2A3A; /* <<< CAMBIO: Fondo un poco más claro */
+    border-bottom: 1px solid #000; /* Borde inferior negro */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.divcueta {
+    display: flex;
+    align-items: center;
+}
+.cuenta2 {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 1rem;
+}
+.sub-menu h5 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.1rem;
+}
+.sub-menu span {
+    color: #adb5bd;
+    font-size: 0.85em;
+}
+.sub-menu .align-items-center {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+.sub-menu .align-items-center i {
+    font-size: 1.4rem;
+    color: #adb5bd;
+    transition: color 0.2s ease;
+}
+.sub-menu .align-items-center i:hover {
+    color: #fff;
+}
+.sub-menu .btn.color3 {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.9em;
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+}
+
+/* --- Controles (Título y botón Agregar) --- */
+.content-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1rem 1rem 1rem;
+    background-color: #121a27; /* Fondo Oscuro Principal */
+    flex-shrink: 0;
+}
+#currentModuleTitle {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+#btnAdd {
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+#btnAdd i {
+    margin-right: 0.4rem;
+}
+
+
+/* --- Área de la Tabla --- */
+#div3 {
+    flex-grow: 1;
+    overflow: auto;
+    width: 100%;
+    padding: 0 1rem 1rem 1rem; /* Ajustado padding superior a 0 */
+    background-color: #121a27; /* Fondo Oscuro Principal */
+}
+
+/* --- Estilo de la Tabla --- */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px; /* Mantiene espacio vertical */
+    margin-bottom: 1rem;
+    margin-top: 0; /* Asegura que no haya margen superior */
+}
+
+thead.menu-busqueda {
+    background-color: #004b63;
+}
+
+th {
+    color: #ffa700 !important;
+    font-weight: 600;
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid #007B9A;
+    position: sticky;
+    top: 0;
+    background-color: #004b63;
+    z-index: 10;
+}
+thead.menu-busqueda th:first-child {
+    border-top-left-radius: 8px;
+}
+thead.menu-busqueda th:last-child {
+    border-top-right-radius: 8px;
+}
+
+td {
+    color: azure !important;
+    padding: 0.7rem 1rem;
+    background-color: #1E2A3A; /* Fondo de celda */
+    /* border-bottom: 1px solid #121a27; /* Quitamos borde inferior */
+    border-top: 1px solid #000; /* <<< AÑADIDO: Borde superior negro para línea */
+    vertical-align: middle;
+}
+/* Aplicar borde solo a partir de la segunda fila para evitar doble línea bajo la cabecera */
+tbody tr:not(:first-child) td {
+    border-top: 1px solid #000;
+}
+/* Quitar borde superior a la primera fila */
+tbody tr:first-child td {
+    border-top: none;
+}
+
+/* Redondear esquinas de las filas */
+tbody tr td:first-child {
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
+}
+tbody tr td:last-child {
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+tbody tr:hover td {
+    background-color: #2A3B50; /* Efecto hover */
+}
+
+/* --- Organización de Imagen en Tabla --- */
+td.image-cell {
+    width: 100px;
+    text-align: center;
+}
+
+.img-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #00dbb9;
+    padding: 2px;
+    background-color: #fff;
+    vertical-align: middle;
+}
+
+/* --- Botones de Acción en Tabla --- */
+td .btn {
+    font-size: 0.85em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.3rem;
+    border: none;
+    color: #ffffff !important;
+}
+td .btn.color1 {
+    background-color: #00dbb9;
+}
+td .btn.color3 {
+    background-color: #ff6334;
+}
+
+
+/* ----- Scrollbar ----- */
+#div3::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+#div3::-webkit-scrollbar-track {
+    background: #121a27;
+    border-radius: 4px;
+}
+#div3::-webkit-scrollbar-thumb {
+    background: #495057;
+    border-radius: 4px;
+}
+#div3::-webkit-scrollbar-thumb:hover {
+    background: #6C757D;
+}
+
+/* ----- Footer ----- */
+footer {
+    padding: 1rem;
+    background-color: #1E2A3A; /* <<< CAMBIO: Mismo fondo que Top Bar */
+    border-top: 1px solid #000; /* Borde superior negro */
+    text-align: center;
+    color: #adb5bd;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+footer p {
+    margin: 0;
+}
+
+/* ----- Modales (Mismo estilo oscuro) ----- */
+.modal-content {
+    background-color: #1E2A3A;
+    color: azure;
+    border: 1px solid #004b63;
+}
+.modal-header {
+    background-color: #101928;
+    border-bottom: 1px solid #004b63;
+    color: #ffa700;
+}
+.modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+.modal-body .form-label {
+    color: #adb5bd;
+}
+.modal-body .form-control, .modal-body .form-select {
+    background-color: #121a27;
+    color: azure;
+    border: 1px solid #004b63;
+}
+.modal-body .form-control::placeholder {
+    color: #6c757d;
+}
+.modal-footer {
+    background-color: #101928;
+    border-top: 1px solid #004b63;
+}
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+
+
+
+/* ----- Estilos para Iconos Sociales en Footer ----- */
+.social-icons {
+    margin-top: 0.8rem; /* Espacio entre el texto y los iconos */
+    text-align: center; /* Centra los iconos */
+}
+
+.social-icon {
+    display: inline-block; /* Permite margen y padding */
+    color: #adb5bd;       /* Color inicial (gris claro) */
+    font-size: 1.6rem;   /* Tamaño de los iconos */
+    margin: 0 0.8rem;    /* Espacio horizontal entre iconos */
+    transition: color 0.2s ease, transform 0.2s ease; /* Transición suave */
+}
+
+.social-icon:hover {
+    color: #fff; /* Cambia a blanco al pasar el mouse */
+    transform: translateY(-3px); /* Efecto sutil de elevación */
+    text-decoration: none; /* Evita subrayado en hover */
+}
+
+
+/* .social-icon .bi-facebook:hover { color: #1877F2; } */
+/* .social-icon .bi-instagram:hover { color: #E4405F; } */
+/* .social-icon .bi-twitter-x:hover { color: #000; } */ /*
+/* .social-icon .bi-whatsapp:hover { color: #25D366; } */
+/* .social-icon .bi-linkedin:hover { color: #0A66C2; } */
